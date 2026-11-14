@@ -16,6 +16,7 @@ import {
   verifySessionToken,
   type AuthenticatedRequest,
 } from './server/auth';
+import { generatePropertyAdvisorReply } from './server/aiAdvisor';
 import {
   createInquiry,
   createProperty,
@@ -94,6 +95,46 @@ async function startServer() {
 
     const inquiry = createInquiry(req.body);
     res.status(201).json({ inquiry });
+  });
+
+  // Public AI Property Advisor chatbot endpoint
+  app.post('/api/ai/chat', async (req, res) => {
+    const message =
+      typeof req.body?.message === 'string' ? req.body.message.trim() : '';
+    if (!message || message.length > 600) {
+      res.status(400).json({
+        error: 'Please enter a property question between 1 and 600 characters.',
+      });
+      return;
+    }
+
+    const rawHistory = Array.isArray(req.body?.history) ? req.body.history : [];
+    const history = rawHistory
+      .filter(
+        (item: unknown): item is { role: 'user' | 'assistant'; text: string } =>
+          Boolean(item) &&
+          typeof item === 'object' &&
+          ((item as { role?: unknown }).role === 'user' ||
+            (item as { role?: unknown }).role === 'assistant') &&
+          typeof (item as { text?: unknown }).text === 'string'
+      )
+      .slice(-8);
+
+    try {
+      const result = await generatePropertyAdvisorReply({
+        message,
+        history,
+        agency: getAgencySettings(),
+        properties: listProperties(),
+      });
+      res.json(result);
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : 'Unable to generate property recommendation right now.';
+      res.status(502).json({ error: errorMessage });
+    }
   });
 
   // Auth endpoints

@@ -20,6 +20,7 @@ import type {
   PropertyCategory,
   TransactionType,
 } from '../types';
+import { PropertyAdvisorChat } from './PropertyAdvisorChat';
 import { PropertyDetailModal } from './PropertyDetailModal';
 import { PublicHeader } from './PublicHeader';
 import { ResilientImage } from './ResilientImage';
@@ -877,6 +878,12 @@ export function PublicSite({
         property={selectedProperty}
         agency={agency}
         onClose={() => setSelectedProperty(null)}
+      />
+
+      <PropertyAdvisorChat
+        agency={agency}
+        properties={properties}
+        onInspectProperty={(prop) => setSelectedProperty(prop)}
       />
     </div>
   );
