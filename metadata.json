@@ -1,0 +1,6 @@
+{
+  "name": "Sai Krupa Real Estate",
+  "description": "Industrial and commercial real estate portfolio, site visit inquiry portal, and secure property management dashboard for Sai Krupa Real Estate in Hubballi, Karnataka.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
